@@ -1,12 +1,17 @@
 import datetime
 from src.user_db import UserModel
 
-from typing import NamedTuple
 
-
-class TimeModel(NamedTuple):
+class TimeModel:
     start_time: datetime.datetime
     end_time: datetime.datetime
+
+    def __init__(self, start_time, end_time):
+        self.start_time = start_time
+        self.end_time = end_time
+
+    def __repr__(self):
+        return f"{self.start_time} ~ {self.end_time}"
 
 
 def load_times(users, sheet, year, month):
@@ -22,23 +27,24 @@ def load_times(users, sheet, year, month):
             state = 2
             continue
         if state == 2:
-            print(data)
             for col in range(1, len(data)):
                 times = users[user_id].times
                 if col not in times:
-                    times[col] = TimeModel(start_time=None, end_time=None)
+                    # times[col] = TimeModel(start_time=None, end_time=None)
+                    times[col] = []
 
-                model = times[col]
-                times = data[col].value.split("\n")
-                for time in times:
-                    time = time.split(":")
-                    if len(time) == 2:
-                        t = datetime.time(hour=int(time[0]), minute=int(time[1]))
+                lines = data[col].value.split("\n")
+                for line in lines:
+                    t = line.split(":")
+                    if len(t) == 2:
+                        t2 = datetime.time(hour=int(t[0]), minute=int(t[1]))
+                        times[col].append(t2)
 
-                        if t < datetime.time(hour=6):
-                            times[col-1].end_time = t
-
-                        if model.start_time:
-                            model.start_time = t
+                        # if t2 < datetime.time(hour=6):
+                        #     times[col-1].end_time = t2
+                        # elif times[col].start_time is not None:
+                        #     times[col].end_time = t2
+                        # elif times[col].start_time is None:
+                        #     times[col].start_time = t2
 
     return users

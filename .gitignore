@@ -5,6 +5,7 @@ bundle.tar.gz
 
 data/
 test/
+out/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
